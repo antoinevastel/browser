@@ -9,12 +9,15 @@ RUN export uid=1000 gid=1000 && \
     chmod 0440 /etc/sudoers.d/developer && \
     chown ${uid}:${gid} -R /home/developer
 
-RUN apt-get update && apt-get install -y firefox wget
+RUN apt-get update && apt-get install -y firefox
+RUN apt-get install wget -y
 RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
 RUN echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
 RUN apt-get update
 RUN apt-get install google-chrome-stable dbus-x11 packagekit-gtk3-module libcanberra-gtk-module -y
+RUN chown -R developer:developer /home/developer
+RUN mkdir /var/run/dbus/
 
 USER developer
 ENV HOME /home/developer
-CMD dbus-daemon --system --fork && /usr/bin/firefox
+CMD sudo dbus-daemon --system --fork && /usr/bin/firefox
